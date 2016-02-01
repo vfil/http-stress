@@ -1,0 +1,30 @@
+{
+  "name": "http-stress",
+  "version": "1.0.0",
+  "description": "A simple http benchmark tool",
+  "main": "index.js",
+  "scripts": {
+    "test": "./node_modules/.bin/mocha --reporter spec",
+    "integration": "./node_modules/.bin/mocha ./integration/integration.js --reporter spec"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vlad06/http-stress.git"
+  },
+  "keywords": [
+    "http",
+    "benchmark"
+  ],
+  "author": "Vladimir Filimon",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vlad06/http-stress/issues"
+  },
+  "homepage": "https://github.com/vlad06/http-stress#readme",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "chai-http": "^1.0.0",
+    "mocha": "^2.4.5",
+    "sinon": "^1.17.3"
+  }
+}
