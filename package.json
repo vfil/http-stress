@@ -2,10 +2,11 @@
   "name": "http-stress",
   "version": "1.0.0",
   "description": "A simple http benchmark tool",
-  "main": "index.js",
+  "main": "http-stress.js",
   "scripts": {
     "test": "./node_modules/.bin/mocha --reporter spec",
-    "integration": "./node_modules/.bin/mocha ./integration/integration.js --reporter spec"
+    "integration": "./node_modules/.bin/mocha ./integration/integration.js --reporter spec",
+    "stress": "node run-stress.js"
   },
   "repository": {
     "type": "git",

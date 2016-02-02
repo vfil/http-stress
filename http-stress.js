@@ -1,18 +1,15 @@
 var http = require('http');
-var URL = require('url');
-
+var utils = require('./utils.js');
 /**
  *
- * @param {String} url URL of tested resource
+ * @param {object} options nodejs parsed url from url.parse()
  * @param {Number} count amount of requests
  * @returns {Promise}
  */
-module.exports = function(url, count) {
+module.exports = function(options, count) {
 
     var i = count;
     var responses = 0;
-
-    var urlObj = URL.parse(url);
 
     var agent = new http.Agent({keepAlive: true});
 
@@ -26,19 +23,10 @@ module.exports = function(url, count) {
         while(i--) {
             console.log('sending url ' + i);
             console.time('profiler');
-            send(urlObj);
+            send();
         }
 
-        function send(urlObj) {
-
-            var options = {
-                protocol: urlObj.protocol,
-                hostname: urlObj.hostname,
-                port: urlObj.port,
-                path: urlObj.path,
-                method: 'GET'
-                //agent: agent
-            };
+        function send() {
 
             var req = http.request(options, function(res) {
                 console.log('new request');

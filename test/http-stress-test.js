@@ -4,6 +4,8 @@ var expect = require('chai').expect;
 var PassThrough = require('stream').PassThrough;
 var http = require('http');
 
+var utils = require('../utils.js');
+
 describe('http-stress', function() {
 
     var stress,
@@ -35,13 +37,12 @@ describe('http-stress', function() {
 
     it('should send requests to provided url certain times', function(done) {
 
-        var testUrl = 'http://test/me';
+        var testUrl = utils.buildRequestOptions('http://test/me', 'GET');
 
         stress(testUrl, 5).then(function() {
             try {
                 expect(httpRequestStub.alwaysCalledWith(testUrl), 'always sends requests to right URL').to.equal(true);
                 expect(httpRequestStub.callCount, 'sends right number of requests').to.equal(5);
-                console.log(httpRequestStub.callCount);
                 done();
             } catch (e) {
                 done(e)
