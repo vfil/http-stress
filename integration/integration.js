@@ -1,41 +1,56 @@
 var expect = require('chai').expect;
+
 var http = require('http');
+var stress = require('../');
 
 describe('http-stress integration tests', function() {
-    it('should send request and retrieve response', function(done) {
+    it('should send requests and retrieve responses', function(done) {
 
-        this.timeout(60000);
+        this.timeout(10000);
 
-        var server = http.createServer();
+        var expectedResponsesCount = 1000;
+        var responsesCount = 0;
 
-        server.on('request', function(req, res) {
-            var pi = calculatePi();
-            var pi = 3.14;
+        var server = http.createServer(function(req, res) {
+
+            //increment count for every new request
+            responsesCount++;
+
+            //load CPU with heavy computations, bigger argument provided - heavier
+            var pi = calculatePi(100);
+
             res.writeHead(200, {'Content-Type': 'text/plain'});
             res.end(pi.toString());
         });
 
-        server.on('clientError', function(exception, socket) {
-            console.log('clientError ' + exception);
-        });
+        server.listen(1800, '127.0.0.1', expectedResponsesCount, function() {
 
-        server.listen(1800, '127.0.0.1', 1000, function() {
-            var stress = require('../');
-            stress('http://127.0.0.1:1800', 100).then(function() {
-                done();
+            stress('http://127.0.0.1:1800', expectedResponsesCount).then(function() {
+                try {
+                    expect(responsesCount).to.equal(expectedResponsesCount);
+                    done();
+                } catch(e) {
+                    done(e);
+                }
             });
         });
     });
 });
 
-function calculatePi() {
-    var Pi= 0, n=1;
+/**
+ * Compute Pi number after Leibniz formula
+ */
+function calculatePi(precision) {
 
-    for(var i = 0; i <= 1000; i++) {
+    var Pi = 0, n = 1;
+
+    for(var i = 0; i <= precision; i++) {
         Pi = Pi + (4 / n) - (4 / (n + 2));
         n = n + 4;
     }
 
     return Pi;
 }
+
+//profiler: 9625
 

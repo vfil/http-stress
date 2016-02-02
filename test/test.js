@@ -7,50 +7,45 @@ var http = require('http');
 describe('http-stress', function() {
 
     var stress,
+        httpRequestStub,
         request,
         expectedResponse = { key: 'value'},
         response;
 
-    beforeEach(function(done) {
+    beforeEach(function() {
 
-        request = sinon.stub(http, 'request');
+        //stub http.request module
+        httpRequestStub = sinon.stub(http, 'request');
 
-        stress = require('../');
-
+        //use nodejs PassThrough Stream type to fake data flow
+        request = new PassThrough();
         response = new PassThrough();
         response.write(JSON.stringify(expectedResponse));
-        response.end(function() {
-            request.callsArgWith(1, response);
-            done();
-        });
+        response.end();
+
+        //configure httpRequestStub to invoke callback function, so 'data' and 'end' events are emitted
+        httpRequestStub.callsArgWithAsync(1, response).returns(request);
+
+        stress = require('../');
     });
 
     afterEach(function() {
-        request.restore();
+        httpRequestStub.restore();
     });
 
-    it('should call http-stress with provided url', function(done) {
-        stress('test', 10).then(function() {
-            expect(request.alwaysCalledWith('test')).to.equal(false);
-            done();
-        })
-    });
+    it('should send requests to provided url certain times', function(done) {
 
-    xit('should send a request', function(done) {
+        var testUrl = 'http://test/me';
 
-        var request = new PassThrough();
-
-        /*this.request.callsArgWith(1, response)
-          .returns(request);*/
-
-        /*stress('test',function(response) {
-            expect(response).to.equal(JSON.stringify(expected));
-            done();
-        });*/
-
-        stress('test', 10).then(function() {
-            expect(request.alwaysCalledWith('test')).to.equal(false);
-            done();
-        })
+        stress(testUrl, 5).then(function() {
+            try {
+                expect(httpRequestStub.alwaysCalledWith(testUrl), 'always sends requests to right URL').to.equal(true);
+                expect(httpRequestStub.callCount, 'sends right number of requests').to.equal(5);
+                console.log(httpRequestStub.callCount);
+                done();
+            } catch (e) {
+                done(e)
+            }
+        });
     });
 });

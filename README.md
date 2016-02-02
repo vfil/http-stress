@@ -1,6 +1,6 @@
 # http-stress
 
-## Operation sysytem constraints
+## Operation system constraints
 
 Depending on your operation system you may need to tune it.
 
@@ -13,3 +13,9 @@ ulimit -n 10240
 sysctl -a | grep somax
 sudo sysctl -w kern.ipc.somaxconn=4096
 ```
+
+## Instalation
+
+## Unit tests
+
+## Integration tests
