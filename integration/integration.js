@@ -1,7 +1,8 @@
 var expect = require('chai').expect;
-
 var http = require('http');
-var stress = require('../');
+
+var stress = require('../http-stress.js');
+var utils = require('../utils.js');
 
 describe('http-stress integration tests', function() {
     it('should send requests and retrieve responses', function(done) {
@@ -13,6 +14,8 @@ describe('http-stress integration tests', function() {
 
         var server = http.createServer(function(req, res) {
 
+            console.log(req.headers);
+
             //increment count for every new request
             responsesCount++;
 
@@ -23,9 +26,11 @@ describe('http-stress integration tests', function() {
             res.end(pi.toString());
         });
 
-        server.listen(1800, '127.0.0.1', expectedResponsesCount, function() {
+        server.listen(1800, '127.0.0.1', expectedResponsesCount-100, function() {
 
-            stress('http://127.0.0.1:1800', expectedResponsesCount).then(function() {
+            var options = utils.buildRequestOptions('http://127.0.0.1:1800', 'GET');
+
+            stress(options, expectedResponsesCount).then(function() {
                 try {
                     expect(responsesCount).to.equal(expectedResponsesCount);
                     done();

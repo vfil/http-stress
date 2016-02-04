@@ -1,5 +1,7 @@
 var http = require('http');
 var utils = require('./utils.js');
+var Statistic = require('./statistic.js');
+
 /**
  *
  * @param {object} options nodejs parsed url from url.parse()
@@ -8,10 +10,19 @@ var utils = require('./utils.js');
  */
 module.exports = function(options, count) {
 
+    var statistic = new Statistic();
+
     var i = count;
     var responses = 0;
 
-    var agent = new http.Agent({keepAlive: true});
+    //inject an http.Agent for statistic usage
+    var agent = options.agent;
+    if(!agent) {
+        agent = new http.Agent({keepAlive: true});
+        options.agent = agent;
+    }
+
+    statistic.setKeepAlive(agent.keepAlive);
 
     function isLastRequest() {
         console.log('checking if last request', count, responses);
@@ -30,7 +41,7 @@ module.exports = function(options, count) {
 
             var req = http.request(options, function(res) {
                 console.log('new request');
-
+                //statistic.hitMaxSockets(agent.sockets);
                 res.on('data', function(data) {
                     console.log('chunk data received');
                 });

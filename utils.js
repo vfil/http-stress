@@ -29,4 +29,16 @@ utils.buildRequestOptions = function(url, method, agent) {
     return options;
 };
 
+utils.reduceObj = function(obj, callback) {
+
+};
+
+utils.reduceObj = function(obj, func) {
+    for(var prop in obj) {
+        if(obj.hasOwnProperty(prop)) {
+            return func(prop);
+        }
+    }
+};
+
 module.exports = utils;
